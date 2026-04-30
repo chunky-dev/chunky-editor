@@ -6,10 +6,7 @@ import io.github.notstirred.chunkyeditor.VanillaRegionPos;
 import io.github.notstirred.chunkyeditor.minecraft.WorldLock;
 import io.github.notstirred.chunkyeditor.state.State;
 import javafx.application.Platform;
-import se.llbit.chunky.world.Chunk;
-import se.llbit.chunky.world.ChunkPosition;
-import se.llbit.chunky.world.EmptyChunk;
-import se.llbit.chunky.world.World;
+import se.llbit.chunky.world.*;
 import se.llbit.chunky.world.region.MCRegion;
 import se.llbit.chunky.world.region.Region;
 import se.llbit.log.Log;
@@ -129,16 +126,17 @@ public class VanillaWorldState {
         }, taskExecutor);
 
         // update the map view with the newly deleted chunks
-        deletionFuture.whenCompleteAsync((v, throwable) ->
+        deletionFuture.whenCompleteAsync((_, throwable) ->
                 regionSelection.forEach((regionPos, chunkPositions) -> {
-                    Region region = world.getRegion(new ChunkPosition(regionPos.x(), regionPos.z()));
+                    Dimension dimension = world.currentDimension();
+                    Region region = dimension.getRegion(new ChunkPosition(regionPos.x(), regionPos.z()));
                     for (ChunkPosition chunkPos : chunkPositions) {
-                        Chunk chunk = world.getChunk(chunkPos);
+                        Chunk chunk = dimension.getChunk(chunkPos);
                         if (!chunk.isEmpty()) {
                             chunk.reset();
                             Accessor.invoke_MCRegion$setChunk((MCRegion) region, chunkPos, EmptyChunk.INSTANCE);
-                            world.chunkUpdated(chunkPos);
-                            world.chunkDeleted(chunkPos);
+                            dimension.chunkUpdated(chunkPos);
+                            dimension.chunkDeleted(chunkPos);
                         }
                     }
                 }), Platform::runLater

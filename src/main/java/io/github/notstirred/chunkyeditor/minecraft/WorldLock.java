@@ -82,10 +82,6 @@ public class WorldLock {
         Path sessionLockFile = worldPath.resolve("session.lock");
 
         File lockFile = sessionLockFile.toFile();
-        if (!lockFile.exists()) {
-            throw new FileNotFoundException();
-        }
-
         return new WorldLock(lockFile, userConfirmationFunction);
     }
 }
