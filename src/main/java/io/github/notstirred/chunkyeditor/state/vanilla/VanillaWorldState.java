@@ -126,7 +126,7 @@ public class VanillaWorldState {
         }, taskExecutor);
 
         // update the map view with the newly deleted chunks
-        deletionFuture.whenCompleteAsync((_, throwable) ->
+        deletionFuture.whenCompleteAsync((v, throwable) ->
                 regionSelection.forEach((regionPos, chunkPositions) -> {
                     Dimension dimension = world.currentDimension();
                     Region region = dimension.getRegion(new ChunkPosition(regionPos.x(), regionPos.z()));
